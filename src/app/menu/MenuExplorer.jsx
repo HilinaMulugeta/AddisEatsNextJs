@@ -6,6 +6,7 @@ import useSWR from "swr";
 import DishList from "./DishList";
 import CategoryBar from "./CategoryBar";
 import SearchBox from "./SearchBox";
+import MenuSidebarCounter from "./MenuSidebarCounter";
 import { fetcher } from "@/lib/fetcher";
 
 const PAGE_SIZE = 4;
@@ -75,54 +76,65 @@ export default function MenuExplorer({ categories, initialPage, initialQuery, in
   }
 
   return (
-    <div className="space-y-5">
-      <SearchBox
-        value={term}
-        onChange={(nextTerm) => {
+    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[14rem_minmax(0,1fr)]">
+      <section aria-labelledby="menu-categories-heading" className="order-1 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:col-start-1 lg:row-start-1">
+        <h2 id="menu-categories-heading" className="mb-3 text-sm font-bold text-slate-900">
+          Categories
+        </h2>
+        <CategoryBar categories={categories} selected={category} onSelect={chooseCategory} />
+      </section>
+
+      <div className="order-2 min-w-0 space-y-5 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+        <SearchBox
+          value={term}
+          onChange={(nextTerm) => {
             setTerm(nextTerm);
             setPage(1);
-        }}
-      />
+          }}
+        />
 
-      <CategoryBar categories={categories} selected={category} onSelect={chooseCategory} />
-
-      <div aria-live="polite" className="space-y-4">
-        <div className="flex min-h-5 items-center justify-between text-xs text-slate-500">
-          <span>{visiblePage.total} {visiblePage.total === 1 ? "dish" : "dishes"}</span>
-          <span>{isValidating ? "Updating results…" : ""}</span>
+        <div aria-live="polite" className="space-y-4">
+          <div className="flex min-h-5 items-center justify-between text-xs text-slate-500">
+            <span>{visiblePage.total} {visiblePage.total === 1 ? "dish" : "dishes"}</span>
+            <span>{isValidating ? "Updating results…" : ""}</span>
+          </div>
+          {error ? (
+            <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              Could not load dishes: {error.message}
+            </p>
+          ) : isLoading && !data ? (
+            <p className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Loading dishes…</p>
+          ) : (
+            <DishList dishes={visiblePage.items} />
+          )}
         </div>
-        {error ? (
-          <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-            Could not load dishes: {error.message}
-          </p>
-        ) : isLoading && !data ? (
-          <p className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Loading dishes…</p>
-        ) : (
-          <DishList dishes={visiblePage.items} />
-        )}
+
+        {visiblePage.totalPages > 1 ? (
+          <nav aria-label="Menu pages" className="flex items-center justify-center gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => changePage(page - 1)}
+              disabled={page <= 1}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-40"
+            >
+              Previous
+            </button>
+            <span className="text-xs text-slate-600">Page {page} of {visiblePage.totalPages}</span>
+            <button
+              type="button"
+              onClick={() => changePage(page + 1)}
+              disabled={page >= visiblePage.totalPages}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-40"
+            >
+              Next
+            </button>
+          </nav>
+        ) : null}
       </div>
 
-      {visiblePage.totalPages > 1 ? (
-        <nav aria-label="Menu pages" className="flex items-center justify-center gap-3 pt-2">
-          <button
-            type="button"
-            onClick={() => changePage(page - 1)}
-            disabled={page <= 1}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-40"
-          >
-            Previous
-          </button>
-          <span className="text-xs text-slate-600">Page {page} of {visiblePage.totalPages}</span>
-          <button
-            type="button"
-            onClick={() => changePage(page + 1)}
-            disabled={page >= visiblePage.totalPages}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-40"
-          >
-            Next
-          </button>
-        </nav>
-      ) : null}
+      <aside aria-label="Cart summary" className="order-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:col-start-1 lg:row-start-2">
+        <MenuSidebarCounter />
+      </aside>
     </div>
   );
 }

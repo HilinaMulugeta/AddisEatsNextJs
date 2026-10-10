@@ -2,7 +2,7 @@
 
 export default function CategoryBar({ categories, selected, onSelect }) {
   return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+    <div className="grid grid-cols-3 gap-2 lg:grid-cols-1">
       {categories.map((category) => {
         const isActive = selected === category;
         return (
@@ -10,10 +10,11 @@ export default function CategoryBar({ categories, selected, onSelect }) {
             key={category}
             type="button"
             onClick={() => onSelect(category)}
-            className={`min-h-11 px-4 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+            aria-pressed={isActive}
+            className={`min-h-11 rounded-xl px-3 text-left text-xs font-semibold transition ${
               isActive
                 ? "bg-amber-600 text-white shadow-sm"
-                : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
+                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
             }`}
           >
             {category}
