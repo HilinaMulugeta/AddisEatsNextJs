@@ -7,6 +7,7 @@ export const metadata = {
     "Explore Addis Eats favorites: Ethiopian breakfast, Doro Wot, Kitfo, Tibs, sides and desserts, made fresh in Addis Ababa.",
   alternates: { canonical: "/menu" },
   openGraph: {
+    type: "website",
     title: "Ethiopian food menu | Addis Eats",
     description:
       "Explore Ethiopian breakfast, Doro Wot, Kitfo, Tibs, sides and desserts, made fresh in Addis Ababa.",
@@ -19,6 +20,13 @@ export const metadata = {
         alt: "Addis Eats Ethiopian food delivery in Addis Ababa",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ethiopian food menu | Addis Eats",
+    description:
+      "Explore Ethiopian breakfast, Doro Wot, Kitfo, Tibs, sides and desserts, made fresh in Addis Ababa.",
+    images: ["/opengraph-image"],
   },
 };
 

@@ -5,7 +5,31 @@ import { getServerEnv } from "@/lib/env";
 import AddToCartButton from "./menu/AddToCartButton";
 
 export const metadata = {
+  description:
+    "Discover Ethiopian favorites in Addis Ababa, from sizzling Tibs and slow-simmered Doro Wot to tender Kitfo and warm Chechebsa.",
   alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    title: "Addis Eats | Ethiopian food delivery in Addis Ababa",
+    description:
+      "Discover Ethiopian favorites in Addis Ababa, from sizzling Tibs and slow-simmered Doro Wot to tender Kitfo and warm Chechebsa.",
+    url: "/",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Addis Eats — Ethiopian favorites made fresh in Addis Ababa",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Addis Eats | Ethiopian food delivery in Addis Ababa",
+    description:
+      "Discover Ethiopian favorites in Addis Ababa, from sizzling Tibs and slow-simmered Doro Wot to tender Kitfo and warm Chechebsa.",
+    images: ["/opengraph-image"],
+  },
 };
 
 function jsonLdScript(value) {
