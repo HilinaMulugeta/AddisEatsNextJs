@@ -47,8 +47,8 @@ export default async function HomePage() {
           </h1>
           <p className="text-amber-100/90 text-base sm:text-lg leading-relaxed">
             From sizzling Tibs and slow-simmered Doro Wot to tender Kitfo and
-            warm Chechebsa. Crafted with authentic spices imported straight from
-            Ethiopia.
+            warm Chechebsa. Browse the menu, create your account, and follow
+            your order status.
           </p>
           <div className="pt-2 flex flex-wrap gap-4">
             <Link

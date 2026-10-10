@@ -3,18 +3,32 @@
 import { useState } from "react";
 import Link from "next/link";
 import HeaderCartBadge from "./HeaderCartBadge";
-
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/menu", label: "Menu" },
-  { href: "/cart", label: "Cart" },
-  { href: "/orders", label: "Orders" },
-  { href: "/signup?next=%2Fcheckout", label: "Sign up", emphasized: true },
-  { href: "/checkout", label: "Checkout", primary: true },
-];
+import { signOutLocalAccount } from "@/lib/localAuth";
+import { useAccount } from "./useAccount";
 
 export default function MainNavigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const account = useAccount();
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/menu", label: "Menu" },
+    { href: "/cart", label: "Cart" },
+    ...(account && !account.error
+      ? [
+          { href: "/orders", label: "Orders" },
+          { href: "/profile", label: "Profile" },
+        ]
+      : [
+          { href: "/signup?next=%2Fcheckout", label: "Sign up", emphasized: true },
+          { href: "/login?next=%2Fcheckout", label: "Sign in" },
+        ]),
+    { href: "/checkout", label: "Checkout", primary: true },
+  ];
+
+  const handleSignOut = () => {
+    signOutLocalAccount();
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -60,6 +74,15 @@ export default function MainNavigation() {
             )}
           </Link>
         ))}
+        {account && !account.error ? (
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex min-h-11 items-center justify-center rounded-lg px-3 text-slate-700 transition-colors hover:bg-slate-50 hover:text-amber-600 sm:px-2"
+          >
+            Sign out
+          </button>
+        ) : null}
       </nav>
     </>
   );

@@ -1,33 +1,27 @@
-# Addis Eats — Day 45 capstone
+# Addis Eats demo
 
-Addis Eats is a Next.js learning project for browsing Ethiopian dishes, signing in to place an
-order, and tracking the signed-in customer's orders. Day 45 completes the authentication,
-authorization, data-flow, performance-budget, metadata, and documentation exercises.
+Addis Eats is a Next.js assignment project for browsing Ethiopian dishes, creating a browser-stored
+account, and tracking orders.
 
 ## Run locally
 
 1. Run `npm install`.
-2. Copy `.env.example` to `.env.local`.
-3. Set `SESSION_SECRET` to a unique random value with at least 32 characters. Set `SITE_URL` to
-   the public HTTPS origin used for production metadata.
-4. Run `npm run dev`, then open `http://localhost:3000`.
+2. Optionally copy `.env.example` to `.env.local` and set `SITE_URL` to the public HTTPS origin
+   used for production metadata.
+3. Run `npm run dev`, then open `http://localhost:3000`.
 
-`npm run lint` and `npm run build` validate the project. Do not put secrets in `NEXT_PUBLIC_*`
-variables or commit `.env.local`.
+`npm run lint`, `npm test`, and `npm run build` validate the project.
 
 ## Project walkthrough
 
 - **Public menu:** server-rendered initial dishes, debounced search, category filtering,
   pagination, and SWR revalidation.
-- **Accounts and private pages:** customers sign up with their name, email, and chosen password.
-  Passwords are stored as salted scrypt hashes; sign-in creates a signed, expiring `httpOnly`
-  session. Checkout, profile, orders, and order status validate it on the server.
-- **Order ownership:** checkout/API writes derive the customer identity from the session.
-  History, detail queries, status polling, and cancellation are owner-scoped.
-- **Demo data:** menu/profile remain seeded, while order records persist in local SQLite across
-  restarts. Multi-instance deployments need a shared managed database.
-- **Checkout integrity:** the cart persists in the browser; checkout requires dishes, validates
-  availability, and calculates prices/totals from the server catalog.
+- **Accounts:** sign-up stores account details and salted password hashes in browser
+  `localStorage`; sign-in sessions live in `sessionStorage`.
+- **Order data:** cart and order history use browser `localStorage`; checkout drafts use
+  `sessionStorage`. Data stays on the current device and can be cleared by the visitor.
+- **Order tracking:** status advances locally every five seconds while an order page is open.
+  Orders are not submitted to a restaurant.
 - **SEO:** route-specific metadata and canonicals, generated Open Graph images, dish
   structured data, sitemap, and robots rules remain in place.
 - **Images and fonts:** local Geist font and responsive `next/image` variants retain the prior
@@ -35,11 +29,10 @@ variables or commit `.env.local`.
 
 ## Day 45 references
 
-- [AUTH.md](./AUTH.md) — session design, access matrix, safe redirects, and security checks.
-- [DATA.md](./DATA.md) — menu/order data sources, revalidation, ownership, and demo limits.
+- [AUTH.md](./AUTH.md) — browser-based account flow and security limitations.
+- [DATA.md](./DATA.md) — menu/order data sources, persistence, and demo limits.
 - [PERF.md](./PERF.md) — production measurements and performance budget; records the LCP,
   JavaScript, and Lighthouse targets still missed in the simulated mobile audit.
 
-This learning project has no email verification, password reset, payment processor, kitchen
-workflow, or managed cloud database. Replace the local SQLite store with a shared managed database
-and add account recovery and verification before production deployment.
+This frontend project has no server authentication, backend order processing, payment processor, or
+live delivery integration. Add a backend and managed database before accepting real orders.

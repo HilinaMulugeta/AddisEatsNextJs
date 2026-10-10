@@ -1,32 +1,30 @@
 "use client";
 
-import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
+import { useEffect } from "react";
 import { ORDER_STATUSES, formatOrderStatus } from "@/lib/orderStatus";
+import { useLocalOrders } from "../useLocalOrders";
 
-export default function OrderStatus({ id, initial }) {
-  const { data, error, isValidating } = useSWR(
-    id ? `/api/orders/${encodeURIComponent(id)}` : null,
-    fetcher,
-    {
-      fallbackData: initial ?? undefined,
-      refreshInterval: (latestOrder) =>
-        latestOrder?.status === "delivered" || latestOrder?.status === "cancelled"
-          ? 0
-          : 5000,
-    },
-  );
+export default function OrderStatus({ id }) {
+  const { orders, storageError, refreshStatuses } = useLocalOrders();
+  const order = orders.find((entry) => entry.id === id);
 
-  const order = data ?? initial;
+  useEffect(() => {
+    refreshStatuses();
+    const timer = window.setInterval(refreshStatuses, 5000);
+    return () => window.clearInterval(timer);
+  }, [refreshStatuses]);
 
-  if (!order) {
-    return <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">Loading order…</p>;
-  }
-
-  if (error) {
+  if (storageError) {
     return (
       <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-        Could not refresh this order: {error.message}
+        {storageError}
+      </p>
+    );
+  }
+  if (!order) {
+    return (
+      <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
+        We couldn’t find this order in your order history.
       </p>
     );
   }
@@ -106,7 +104,7 @@ export default function OrderStatus({ id, initial }) {
         <p className="mt-3 font-bold text-slate-900">Total: {order.total} ETB</p>
       </div>
       <p className="text-xs text-slate-400">
-        {isValidating ? "Checking for updates…" : isCancelled || order.status === "delivered"
+        {isCancelled || order.status === "delivered"
           ? `Status: ${formatOrderStatus(order.status)}.`
           : "Status updates automatically every five seconds."}
       </p>

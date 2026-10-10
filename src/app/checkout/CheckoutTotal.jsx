@@ -9,7 +9,7 @@ export default function CheckoutTotal() {
 
   return (
     <div>
-      <span className="text-xs text-slate-500">Estimated total (server verifies prices):</span>
+      <span className="text-xs text-slate-500">Estimated total:</span>
       <p className="text-lg font-black text-amber-700">{total} ETB</p>
     </div>
   );

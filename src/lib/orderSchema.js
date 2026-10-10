@@ -1,8 +1,9 @@
 import { z } from "zod";
 
-/** Shared by the checkout form, POST /api/orders, and the placeOrder action. */
+/** Validates checkout details before saving an order in browser storage. */
 export const orderSchema = z.object({
   name: z.string().trim().min(2, "Enter your full name"),
+  email: z.string().trim().email("Enter a valid email address").max(254),
   phone: z
     .string()
     .trim()

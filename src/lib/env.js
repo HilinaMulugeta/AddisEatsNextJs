@@ -7,7 +7,6 @@ const serverEnvSchema = z.object({
     .url()
     .refine((value) => value.startsWith("https://"), "must use HTTPS")
     .default("https://addiseats.et"),
-  SESSION_SECRET: z.string().min(32, "must contain at least 32 characters"),
 });
 
 let validatedEnv;
@@ -25,8 +24,4 @@ export function getServerEnv() {
 
   validatedEnv = result.data;
   return validatedEnv;
-}
-
-export function getSessionSecret() {
-  return getServerEnv().SESSION_SECRET;
 }

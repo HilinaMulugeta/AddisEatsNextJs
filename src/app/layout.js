@@ -17,14 +17,14 @@ export const metadata = {
     template: "%s | Addis Eats",
   },
   description:
-    "Order authentic Ethiopian favorites, from Doro Wot to Kitfo, with fast delivery across Addis Ababa.",
+    "Explore Ethiopian favorites from Doro Wot to Kitfo, create your account, and follow your Addis Eats order.",
   openGraph: {
     type: "website",
     locale: "en_ET",
     siteName: "Addis Eats",
     title: "Addis Eats | Ethiopian food delivery in Addis Ababa",
     description:
-      "Order authentic Ethiopian favorites, from Doro Wot to Kitfo, with fast delivery across Addis Ababa.",
+      "Explore Ethiopian favorites from Doro Wot to Kitfo, create your account, and follow your Addis Eats order.",
     images: [
       {
         url: "/opengraph-image",
@@ -38,7 +38,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Addis Eats | Ethiopian food delivery in Addis Ababa",
     description:
-      "Order authentic Ethiopian favorites, from Doro Wot to Kitfo, with fast delivery across Addis Ababa.",
+      "Explore Ethiopian favorites from Doro Wot to Kitfo, create your account, and follow your Addis Eats order.",
     images: ["/opengraph-image"],
   },
 };
