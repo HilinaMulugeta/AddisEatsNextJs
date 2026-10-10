@@ -49,9 +49,9 @@ export default function CartClient() {
         {items.map((item) => (
           <div
             key={item.id}
-            className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm"
+            className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4"
           >
-            <div className="flex items-center gap-4">
+            <div className="flex w-full min-w-0 items-center gap-3 sm:w-auto sm:flex-1 sm:gap-4">
               <Image
                 src={item.image}
                 alt={item.imageAlt}
@@ -60,9 +60,9 @@ export default function CartClient() {
                 sizes="64px"
                 quality={65}
                 style={{ width: 64, height: 64 }}
-                className="rounded-xl object-cover border border-slate-100"
+                className="shrink-0 rounded-xl border border-slate-100 object-cover"
               />
-              <div>
+              <div className="min-w-0">
                 <h3 className="font-bold text-slate-900 text-sm">
                   {item.name}
                 </h3>
@@ -72,27 +72,29 @@ export default function CartClient() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+            <div className="ml-auto flex w-full items-center justify-end gap-2 sm:w-auto sm:gap-3">
+              <div className="flex items-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
                 <button
                   type="button"
                   onClick={() => updateQuantity(item.id, -1)}
-                  className="px-2.5 py-1 text-xs hover:bg-slate-200 transition"
+                  aria-label={`Remove one ${item.name}`}
+                  className="min-h-11 min-w-10 text-sm hover:bg-slate-200 transition"
                 >
                   -
                 </button>
-                <span className="px-2.5 py-1 text-xs font-semibold">
+                <span aria-label={`${item.quantity} in cart`} className="min-w-8 px-1 text-center text-xs font-semibold">
                   {item.quantity}
                 </span>
                 <button
                   type="button"
                   onClick={() => updateQuantity(item.id, 1)}
-                  className="px-2.5 py-1 text-xs hover:bg-slate-200 transition"
+                  aria-label={`Add one ${item.name}`}
+                  className="min-h-11 min-w-10 text-sm hover:bg-slate-200 transition"
                 >
                   +
                 </button>
               </div>
-              <span className="font-extrabold text-xs text-slate-800 w-16 text-right">
+              <span className="w-16 shrink-0 text-right text-xs font-extrabold text-slate-800">
                 {item.price * item.quantity} ETB
               </span>
             </div>

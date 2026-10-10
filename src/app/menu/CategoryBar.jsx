@@ -10,7 +10,7 @@ export default function CategoryBar({ categories, selected, onSelect }) {
             key={category}
             type="button"
             onClick={() => onSelect(category)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+            className={`min-h-11 px-4 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
               isActive
                 ? "bg-amber-600 text-white shadow-sm"
                 : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"

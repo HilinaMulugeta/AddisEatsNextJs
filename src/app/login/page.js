@@ -22,7 +22,7 @@ export default async function LoginPage({ searchParams }) {
       <div className="text-center">
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Welcome back</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Sign in to place orders and keep them connected to your account.
+          Sign in to continue to checkout and keep your orders connected to your account.
         </p>
       </div>
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">

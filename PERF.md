@@ -1,4 +1,4 @@
-# Day 45 performance budget and report
+# Addis Eats performance budget and report
 
 ## Measurement method
 
@@ -53,3 +53,14 @@ describe one local lab machine/build and should be remeasured on the deployed pr
 
 INP is not available from these Lighthouse lab runs. Do not infer it from Total Blocking Time;
 record it from field data or an interaction-capable real-user measurement.
+
+## Responsive and image-loading follow-up
+
+The shared header changes to a two-row, three-column navigation on small screens to keep all
+primary links visible without horizontal page overflow. Dish-card image `sizes` now account for
+the menu sidebar and capped desktop content width, and dish-detail hero images are explicitly
+high priority. The home and menu card images continue to use Next.js responsive image delivery;
+the local source font is a 28 KB WOFF2 served with `font-display: swap`.
+
+These implementation changes have not yet been measured in Lighthouse. Re-run the production
+mobile audit before changing the reported performance budget values above.

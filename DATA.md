@@ -24,7 +24,10 @@ persist in browser local storage and are cleared after a successful order.
 Order history calls `listOrdersForUser(user.id)`; detail pages and APIs call
 `getOrderForUser(id, user.id)`; cancellation checks the owner before updating status.
 Order-status UI starts with the server-rendered record and polls its owner-scoped endpoint every
-five seconds.
+five seconds. The server advances non-cancelled orders from `placed` to `preparation`, `on the
+way`, and `delivered` at five-second intervals measured from order creation; status advancement
+is persisted when an order is read, so no background worker is required. Cancellation is only
+allowed while an order is still `placed`.
 
 ## Demo limitations
 

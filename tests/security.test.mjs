@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { getSafeRedirectPath } from "../src/lib/redirects.js";
+import { getOrderStatusForAge } from "../src/lib/orderStatus.js";
 
 const ordersModule = new URL("../src/lib/orders.js", import.meta.url).href;
 const usersModule = new URL("../src/lib/user.js", import.meta.url).href;
@@ -15,6 +16,69 @@ test("safe login redirects remain on this site", () => {
   assert.equal(getSafeRedirectPath("https://example.org"), "/checkout");
   assert.equal(getSafeRedirectPath("//example.org"), "/checkout");
   assert.equal(getSafeRedirectPath("/\\example.org"), "/checkout");
+});
+
+test("order statuses advance once every five seconds and stop at delivered", () => {
+  const createdAt = "2026-10-10T06:00:00.000Z";
+  const start = Date.parse(createdAt);
+
+  assert.equal(getOrderStatusForAge(createdAt, start + 4999), "placed");
+  assert.equal(getOrderStatusForAge(createdAt, start + 5000), "preparation");
+  assert.equal(getOrderStatusForAge(createdAt, start + 10000), "on the way");
+  assert.equal(getOrderStatusForAge(createdAt, start + 15000), "delivered");
+  assert.equal(getOrderStatusForAge(createdAt, start + 60000), "delivered");
+  assert.equal(getOrderStatusForAge("not-a-date", start + 60000), "placed");
+});
+
+test("reading an order persists its timed status and blocks late cancellation", (t) => {
+  const directory = mkdtempSync(join(tmpdir(), "addis-eats-status-"));
+  const databasePath = join(directory, "orders.sqlite");
+  const env = { ...process.env, ADDIS_EATS_DB_PATH: databasePath };
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+
+  const checked = JSON.parse(
+    execFileSync(
+      process.execPath,
+      [
+        "--input-type=module",
+        "-e",
+        `import database from ${JSON.stringify(new URL("../src/lib/database.js", import.meta.url).href)};
+         import { createOrder, getOrderForUser, cancelOwnedOrder } from ${JSON.stringify(ordersModule)};
+         const order = await createOrder({
+           userId: "owner",
+           name: "Test Customer",
+           email: "owner@example.test",
+           phone: "0912345678",
+           address: "Test address",
+           paymentMethod: "cash",
+           items: [],
+           subtotal: 0,
+           deliveryFee: 150,
+           total: 150
+         });
+         const elapsedStatuses = [];
+         for (const elapsedMs of [0, 5000, 10000, 15000]) {
+           database.prepare("UPDATE orders SET created_at = ? WHERE id = ?")
+             .run(new Date(Date.now() - elapsedMs).toISOString(), order.id);
+           elapsedStatuses.push((await getOrderForUser(order.id, "owner")).status);
+         }
+         const storedStatus = database.prepare("SELECT status FROM orders WHERE id = ?").get(order.id).status;
+         const lateCancellation = await cancelOwnedOrder(order.id, "owner");
+         console.log(JSON.stringify({ elapsedStatuses, storedStatus, lateCancellation }));`,
+      ],
+      { env, encoding: "utf8" },
+    ),
+  );
+
+  assert.deepEqual(checked.elapsedStatuses, [
+    "placed",
+    "preparation",
+    "on the way",
+    "delivered",
+  ]);
+  assert.equal(checked.storedStatus, "delivered");
+  assert.equal(checked.lateCancellation.ok, false);
+  assert.equal(checked.lateCancellation.status, 409);
 });
 
 test("users can register and sign in with unique emails and hashed passwords", (t) => {

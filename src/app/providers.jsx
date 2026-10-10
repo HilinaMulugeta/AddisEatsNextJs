@@ -76,13 +76,15 @@ export function Providers({ children }) {
       window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
       setWriteError(null);
       window.dispatchEvent(new Event("addis-eats-cart-change"));
+      return true;
     } catch {
       setWriteError("Your cart could not be saved. Check browser storage and try again.");
+      return false;
     }
   }, []);
 
   const addItem = useCallback((dish) => {
-    updateStoredItems((current) => {
+    return updateStoredItems((current) => {
       const existing = current.find((item) => item.id === dish.id);
       if (existing) {
         return current.map((item) =>

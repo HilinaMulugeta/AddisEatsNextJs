@@ -3,6 +3,7 @@ import { listOrdersForUser } from "@/lib/orders";
 import { requireAuth } from "@/lib/auth";
 import CancelOrderButton from "./CancelOrderButton";
 import SignOutButton from "../SignOutButton";
+import { formatOrderStatus } from "@/lib/orderStatus";
 
 export const metadata = {
   title: "Your orders",
@@ -55,7 +56,7 @@ export default async function OrdersPage() {
                     order.status === "cancelled" ? "text-slate-400 font-semibold" : "text-emerald-700 font-semibold"
                   }
                 >
-                  {order.status}
+                  {formatOrderStatus(order.status)}
                 </p>
               </div>
               {order.status === "placed" ? <CancelOrderButton orderId={order.id} /> : null}

@@ -1,5 +1,27 @@
 import { randomUUID } from "node:crypto";
 import database from "./database.js";
+import { getOrderStatusForAge, ORDER_STATUSES } from "./orderStatus.js";
+
+function refreshOrderStatus(row) {
+  if (!row || row.status === "cancelled") return row;
+
+  const currentIndex = ORDER_STATUSES.indexOf(row.status);
+  if (currentIndex < 0) return row;
+
+  const nextStatus = getOrderStatusForAge(row.created_at);
+  if (ORDER_STATUSES.indexOf(nextStatus) <= currentIndex) return row;
+
+  const result = database
+    .prepare("UPDATE orders SET status = ? WHERE id = ? AND user_id = ? AND status = ?")
+    .run(nextStatus, row.id, row.user_id, row.status);
+  if (result.changes !== 1) {
+    return database
+      .prepare("SELECT * FROM orders WHERE id = ? AND user_id = ?")
+      .get(row.id, row.user_id);
+  }
+  row.status = nextStatus;
+  return row;
+}
 
 function toOrder(row) {
   if (!row) return null;
@@ -57,14 +79,14 @@ export async function getOrderForUser(id, userId) {
   const row = database
     .prepare("SELECT * FROM orders WHERE id = ? AND user_id = ?")
     .get(id, userId);
-  return toOrder(row);
+  return toOrder(refreshOrderStatus(row));
 }
 
 export async function listOrdersForUser(userId) {
   const rows = database
     .prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC")
     .all(userId);
-  return rows.map(toOrder);
+  return rows.map((row) => toOrder(refreshOrderStatus(row)));
 }
 
 export async function cancelOwnedOrder(id, sessionId) {
@@ -75,9 +97,23 @@ export async function cancelOwnedOrder(id, sessionId) {
   if (!order) {
     return { ok: false, status: 404, error: "Order not found" };
   }
-  database
-    .prepare("UPDATE orders SET status = 'cancelled' WHERE id = ? AND user_id = ?")
+  if (order.status !== "placed") {
+    return {
+      ok: false,
+      status: 409,
+      error: "This order can no longer be cancelled after preparation has started.",
+    };
+  }
+  const result = database
+    .prepare("UPDATE orders SET status = 'cancelled' WHERE id = ? AND user_id = ? AND status = 'placed'")
     .run(id, sessionId);
+  if (result.changes !== 1) {
+    return {
+      ok: false,
+      status: 409,
+      error: "This order can no longer be cancelled after preparation has started.",
+    };
+  }
   const updated = await getOrderForUser(id, sessionId);
   return { ok: true, order: updated };
 }

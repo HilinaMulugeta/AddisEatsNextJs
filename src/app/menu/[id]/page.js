@@ -111,6 +111,8 @@ export default async function DishDetailPage({ params }) {
             height={dish.imageHeight}
             sizes="(max-width: 768px) 100vw, 50vw"
             quality={65}
+            priority
+            fetchPriority="high"
             className="h-full w-full object-cover"
           />
           {dish.spicy && (

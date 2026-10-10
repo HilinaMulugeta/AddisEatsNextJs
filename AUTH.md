@@ -43,6 +43,10 @@ Login and sign-up `next` parameters are passed through `getSafeRedirectPath()`. 
 paths only and rejects protocol-relative paths, backslashes, and any URL that resolves to another
 origin. Invalid values fall back to `/checkout`.
 
+The shared navbar links new customers to sign-up with `/checkout` as the return destination.
+Checkout redirects signed-out customers to sign-in, where they can either authenticate or switch
+to sign-up; both successful flows return them to checkout.
+
 ## Security checks
 
 `npm test` checks account creation, case-insensitive unique email addresses, password hashing and

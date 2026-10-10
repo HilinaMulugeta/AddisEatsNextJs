@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import SignOutButton from "../SignOutButton";
 import { getAuthenticatedUser } from "@/lib/auth";
 import { listOrdersForUser } from "@/lib/orders";
+import { formatOrderStatus } from "@/lib/orderStatus";
 
 export const metadata = {
   title: "Your customer profile",
@@ -82,7 +83,7 @@ export default async function ProfilePage() {
                     </div>
                   </div>
                   <span className={`order-status ${order.status.toLowerCase().replace(/\s+/g, "-")}`}>
-                    {order.status}
+                    {formatOrderStatus(order.status)}
                   </span>
                 </div>
               ))}
