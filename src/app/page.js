@@ -37,32 +37,82 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdScript(restaurantJsonLd) }}
       />
-      <section className="bg-gradient-to-r from-amber-700 via-amber-800 to-orange-900 rounded-3xl p-8 sm:p-14 text-white shadow-xl relative overflow-hidden">
-        <div className="relative z-10 max-w-2xl space-y-5">
-          <span className="inline-block bg-amber-500/30 text-amber-200 border border-amber-400/30 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">
-            Traditional Habesha Cuisine
-          </span>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-            Taste the Soul of Addis Ababa
-          </h1>
-          <p className="text-amber-100/90 text-base sm:text-lg leading-relaxed">
-            From sizzling Tibs and slow-simmered Doro Wot to tender Kitfo and
-            warm Chechebsa. Browse the menu, create your account, and follow
-            your order status.
-          </p>
-          <div className="pt-2 flex flex-wrap gap-4">
-            <Link
-              href="/menu"
-              className="bg-white text-amber-900 hover:bg-amber-50 font-bold px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
-            >
-              Explore Full Menu →
-            </Link>
-            <Link
-              href="/cart"
-              className="bg-amber-900/60 hover:bg-amber-900/80 text-white border border-amber-400/30 font-semibold px-6 py-3 rounded-xl transition"
-            >
-              View Order Cart
-            </Link>
+      <section className="relative isolate overflow-hidden rounded-[2rem] bg-[#13251f] text-white shadow-xl">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-32 h-96 w-96 rounded-full border border-white/10" />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-8 -top-16 h-64 w-64 rounded-full border border-white/10" />
+        <div className="relative grid min-h-[34rem] items-center gap-10 p-6 sm:p-10 lg:grid-cols-[1fr_0.92fr] lg:gap-12 lg:p-14">
+          <div className="relative z-10 max-w-xl py-4 lg:py-8">
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-2 text-xs font-semibold tracking-wide text-amber-100">
+              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-amber-400" />
+              Traditional Habesha cuisine
+            </div>
+            <h1 className="max-w-lg text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+              Taste the soul
+              <span className="mt-1 block font-serif font-medium italic text-amber-300">
+                of Addis Ababa.
+              </span>
+            </h1>
+            <p className="mt-6 max-w-lg text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
+              From sizzling Tibs and slow-simmered Doro Wot to tender Kitfo and
+              warm Chechebsa. Browse the menu, create your account, and follow
+              your order status.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/menu"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-amber-400 px-6 py-3 text-sm font-bold text-[#17251f] shadow-lg shadow-black/10 transition hover:bg-amber-300"
+              >
+                Explore the menu <span aria-hidden="true">→</span>
+              </Link>
+              <Link
+                href="/cart"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/20 bg-white/[0.06] px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                View your cart
+              </Link>
+            </div>
+            <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-white/10 pt-6 text-xs font-medium text-slate-300">
+              <span className="inline-flex items-center gap-2">
+                <span aria-hidden="true" className="text-amber-300">✦</span>
+                Made with Habesha flavor
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <span aria-hidden="true" className="text-amber-300">⌖</span>
+                Addis Ababa, Ethiopia
+              </span>
+            </div>
+          </div>
+
+          <div className="relative mx-auto w-full max-w-xl lg:ml-auto">
+            <div aria-hidden="true" className="absolute -inset-4 rounded-[2rem] bg-amber-400/10 blur-2xl" />
+            <div className="relative overflow-hidden rounded-[1.6rem] border border-white/15 bg-[#26352e] p-2 shadow-2xl">
+              <div className="relative aspect-[4/4.35] overflow-hidden rounded-[1.2rem] bg-[#26352e]">
+                <Image
+                  src={featured[0].image}
+                  alt={featured[0].imageAlt}
+                  fill
+                  sizes="(max-width: 1023px) min(90vw, 560px), 44vw"
+                  quality={75}
+                  priority
+                  fetchPriority="high"
+                  className="object-cover"
+                />
+                <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/5" />
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 text-white sm:p-7">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">
+                      A local favorite
+                    </p>
+                    <p className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+                      {featured[0].name}
+                    </p>
+                  </div>
+                  <span className="shrink-0 rounded-full border border-white/25 bg-black/25 px-3 py-1.5 text-sm font-semibold backdrop-blur-sm">
+                    {featured[0].price} ETB
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
