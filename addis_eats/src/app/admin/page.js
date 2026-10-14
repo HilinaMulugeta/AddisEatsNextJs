@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import { etb, when } from "@/lib/format";
+import { etb } from "@/lib/format";
 import { getAdminOrderSummary, listRecentOrdersForAdmin } from "@/lib/orders";
-import { getOrderStatusLabel } from "@/lib/orderStatus";
+import AdminOrdersTable from "./AdminOrdersTable";
+import AdminCharts from "./AdminCharts";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -22,71 +23,56 @@ export default async function AdminDashboardPage() {
   const activeCount = [...activeStatuses].reduce((total, status) => total + summary.byStatus[status], 0);
 
   return (
-    <div className="container">
-      <nav className="nav">
-        <Link href="/" className="brand">Addis Eats</Link>
-        <div className="nav-links">
-          <span className="status-tag">Restricted operations · Admin</span>
-          <Link href="/dashboard" className="secondary-btn">Customer dashboard</Link>
-          <Link href="/profile" className="secondary-btn">Profile</Link>
+    <div className="min-h-screen bg-slate-50">
+      <nav className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/" className="text-lg font-extrabold tracking-tight text-slate-900">Addis Eats <span className="ml-2 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800">Admin</span></Link>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <Link href="/dashboard" className="rounded-xl border border-slate-200 px-3 py-2 font-semibold text-slate-700 hover:bg-slate-50">Customer dashboard</Link>
+            <Link href="/profile" className="rounded-xl border border-slate-200 px-3 py-2 font-semibold text-slate-700 hover:bg-slate-50">Profile</Link>
+          </div>
         </div>
       </nav>
 
-      <section className="page-shell">
-        <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <main className="mx-auto max-w-7xl space-y-7 px-4 py-8 sm:px-6 lg:px-8">
+        <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow">Operations</p>
-            <h1 className="text-3xl font-bold">Admin dashboard</h1>
-            <p className="mt-2 text-sm text-slate-500">Signed in as {admin.email}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-700">Order operations</p>
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">Admin dashboard</h1>
+            <p className="mt-2 text-sm text-slate-600">Signed in as {admin.email}</p>
           </div>
-          <p className="text-sm text-slate-500">Showing the 30 most recent orders</p>
+          <p className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-600">Latest {orders.length} orders</p>
         </header>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <SummaryCard label="All orders" value={summary.total} detail="Across customer accounts" />
-          <SummaryCard label="In progress" value={activeCount} detail="Placed, prepared, or on the way" />
-          <SummaryCard label="Delivered" value={summary.byStatus.delivered} detail="Completed demo deliveries" />
-          <SummaryCard label="Order value" value={etb.format(summary.revenue)} detail="Excludes cancelled orders" />
-        </div>
-
-        <section className="detail-panel mt-8 overflow-hidden">
-          <div className="panel-header">
-            <div>
-              <h2>Recent orders</h2>
-              <p className="text-sm text-slate-500">Customer and delivery details for order operations.</p>
-            </div>
-          </div>
-          {orders.length ? (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[920px] text-left text-sm">
-                <thead className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
-                  <tr><th className="px-3 py-3">Order</th><th className="px-3 py-3">Customer</th><th className="px-3 py-3">Delivery area</th><th className="px-3 py-3">Placed</th><th className="px-3 py-3">Status</th><th className="px-3 py-3 text-right">Total</th></tr>
-                </thead>
-                <tbody>
-                  {orders.map((order) => (
-                    <tr key={order.id} className="border-b border-slate-100 last:border-0">
-                      <td className="px-3 py-4"><Link href={`/orders/${order.id}`} className="font-semibold text-orange-700 hover:underline">{order.id}</Link></td>
-                      <td className="px-3 py-4"><div className="font-medium">{order.name}</div><div className="text-xs text-slate-500">{order.email} · {order.phone}</div></td>
-                      <td className="px-3 py-4">{order.neighborhood}</td>
-                      <td className="px-3 py-4">{when.format(new Date(order.createdAt))}</td>
-                      <td className="px-3 py-4"><StatusBadge status={order.status} /></td>
-                      <td className="px-3 py-4 text-right font-semibold">{etb.format(order.total)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : <p className="py-8 text-center text-sm text-slate-500">No orders have been placed yet.</p>}
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Order overview">
+          <SummaryCard label="All orders" value={summary.total} detail="Across customer accounts" accent="orange" />
+          <SummaryCard label="In progress" value={activeCount} detail="Placed, prepared, or on the way" accent="blue" />
+          <SummaryCard label="Delivered" value={summary.byStatus.delivered} detail="Completed demo deliveries" accent="green" />
+          <SummaryCard label="Order value" value={etb.format(summary.revenue)} detail="Excludes cancelled orders" accent="violet" />
         </section>
-      </section>
+
+        <AdminCharts summary={summary} orders={orders} />
+
+        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm" aria-labelledby="recent-orders-heading">
+          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 px-4 py-5 sm:px-6">
+            <div><h2 id="recent-orders-heading" className="text-lg font-bold text-slate-900">Recent orders</h2><p className="mt-1 text-sm text-slate-500">Select an order to see its delivery and item details here.</p></div>
+            <span className="text-xs font-medium text-slate-500">Newest first · maximum 30</span>
+          </div>
+          {orders.length > 0 && <div className="hidden grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,.8fr)_minmax(0,.8fr)_auto] gap-4 bg-slate-50 px-6 py-3 text-xs font-bold uppercase tracking-wide text-slate-500 sm:grid"><span>Order and customer</span><span>Delivery area</span><span>Placed</span><span>Status</span><span className="text-right">Total</span></div>}
+          <AdminOrdersTable orders={orders} />
+        </section>
+      </main>
     </div>
   );
 }
 
-function SummaryCard({ label, value, detail }) {
-  return <article className="detail-panel"><p className="text-sm text-slate-500">{label}</p><p className="mt-2 text-2xl font-bold">{value}</p><p className="mt-1 text-xs text-slate-500">{detail}</p></article>;
+function SummaryCard({ label, value, detail, accent }) {
+  const tones = {
+    orange: "bg-orange-50 text-orange-800",
+    blue: "bg-blue-50 text-blue-800",
+    green: "bg-emerald-50 text-emerald-800",
+    violet: "bg-violet-50 text-violet-800",
+  };
+  return <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide ${tones[accent]}`}>{label}</span><p className="mt-4 text-3xl font-extrabold tabular-nums text-slate-950">{value}</p><p className="mt-1 text-xs text-slate-500">{detail}</p></article>;
 }
 
-function StatusBadge({ status }) {
-  return <span className={`order-status ${status}`}>{getOrderStatusLabel(status)}</span>;
-}
